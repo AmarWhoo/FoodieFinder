@@ -11,7 +11,7 @@ import retrofit2.Response
 class MainViewModel(private val repository: Repository): ViewModel() {
     var individualRecipe: MutableLiveData<Response<RecipeInstance>> = MutableLiveData()
 
-    fun getRecipeInstance(apiKey: String, number: Int) {
+    fun getRandomRecipeInstance(apiKey: String, number: Int) {
         viewModelScope.launch {
             val response = repository.getRecipeInfo(apiKey = apiKey, number = number)
             if (response.isSuccessful) {
@@ -21,6 +21,13 @@ class MainViewModel(private val repository: Repository): ViewModel() {
                     individualRecipe.value = individualRecipeResponse
                 }
             }
+        }
+    }
+
+    fun getRecipeById(apiKey: String, id: Int) {
+        viewModelScope.launch {
+            val response = repository.getRecipeById(apiKey = apiKey, id = id)
+            individualRecipe.value = response
         }
     }
 }
