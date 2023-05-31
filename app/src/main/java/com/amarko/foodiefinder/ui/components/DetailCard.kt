@@ -15,7 +15,7 @@ import coil.compose.AsyncImage
 import com.amarko.foodiefinder.models.RecipeInstance
 
 @Composable
-fun RecipeCard(
+fun DetailCard(
     recipe: RecipeInstance
 ) {
     val summary = recipe.summary.replace("<.*?>".toRegex(), "")

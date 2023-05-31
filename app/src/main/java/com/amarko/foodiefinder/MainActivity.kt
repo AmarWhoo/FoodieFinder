@@ -4,13 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.amarko.foodiefinder.navigation.SetupNavGraph
 import com.amarko.foodiefinder.repo.Repository
-import com.amarko.foodiefinder.ui.HomeScreen
 import com.amarko.foodiefinder.ui.theme.FoodieFinderTheme
 import com.amarko.foodiefinder.viewmodel.MainViewModel
 import com.amarko.foodiefinder.viewmodel.MainViewModelFactory
 
 class MainActivity : ComponentActivity() {
+
+    lateinit var navController: NavHostController
+
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +27,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FoodieFinderTheme {
-                HomeScreen(viewModel = viewModel)
+                navController = rememberNavController()
+                SetupNavGraph(navController = navController, viewModel = viewModel)
             }
         }
     }
