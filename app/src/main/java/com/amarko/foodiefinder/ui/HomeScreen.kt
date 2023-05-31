@@ -2,8 +2,8 @@ package com.amarko.foodiefinder.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -26,7 +26,6 @@ fun HomeScreen(
 
     when {
         recipeState.value == null -> {
-            // TODO: Maybe change this into an animated loading circle, but we'll see...
             CircularProgressIndicator(modifier = Modifier
                 .fillMaxSize()
                 .wrapContentSize(Alignment.Center))
@@ -34,7 +33,7 @@ fun HomeScreen(
         recipeState.value?.isSuccessful == true -> {
             val recipe: RecipeInstance? = recipeState.value?.body()
             if (recipe != null) {
-                RecipeDisplay(recipe)
+                RecipeDisplay(navController = navController, recipe = recipe)
             } else {
                 Text(text = "Recipe data is null!")
             }

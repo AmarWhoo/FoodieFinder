@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.amarko.foodiefinder.ui.FavoritesScreen
 import com.amarko.foodiefinder.ui.HomeScreen
+import com.amarko.foodiefinder.ui.SettingsScreen
 import com.amarko.foodiefinder.viewmodel.MainViewModel
 
 @Composable
@@ -24,12 +26,12 @@ fun SetupNavGraph(
         composable(
             route = Screen.Favorites.route
         ) {
-            // TODO: Add favorites screen call
+            FavoritesScreen()
         }
         composable(
             route = Screen.Settings.route
         ) {
-            // TODO: Add settings screen call
+            SettingsScreen()
         }
     }
 }
