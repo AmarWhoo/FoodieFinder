@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.amarko.foodiefinder.models.Equipment
 import com.amarko.foodiefinder.models.RecipeInstance
+import com.amarko.foodiefinder.ui.components.FoodFilter
 import com.amarko.foodiefinder.ui.components.RecipeDisplay
 import com.amarko.foodiefinder.ui.components.RecipeLoadingScreen
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     recipeStateFlow: StateFlow<RecipeInstance?>,
     equipmentList: List<Equipment>,
+    onApplyFilters: (String) -> Unit,
     onRefreshClick: () -> Unit
 ) {
     val recipe by recipeStateFlow.collectAsState()
@@ -37,7 +39,9 @@ fun HomeScreen(
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
-        sheetContent = {  },
+        sheetContent = {
+           FoodFilter(onApplyFilters = onApplyFilters)
+        },
         sheetPeekHeight = 0.dp
     ) {
         Box {

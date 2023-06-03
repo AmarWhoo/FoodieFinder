@@ -5,9 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModelProvider
@@ -59,14 +57,18 @@ class MainActivity : ComponentActivity() {
 
                     viewModel.performAnalyzeInstructions(RetrofitInstance.API_KEY, instructions)
                     val equipmentList by viewModel.analyzedInstructions.collectAsState(emptyList())
+                    val selectedFiltersState = remember { mutableStateOf("") }
 
 //                  if (equipmentList.isNotEmpty())
                     Frame(
                         navController = navController,
                         recipeStateFlow = recipeStateFlow,
                         equipmentList = equipmentList,
+                        onApplyFilters = { filters ->
+                            selectedFiltersState.value = filters
+                        },
                         onRefreshClick = {
-                            viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, "", 1)
+                            viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, selectedFiltersState.value, 1)
                         }
                     )
                 } else {

@@ -22,9 +22,11 @@ fun FoodFilter(
     val diets = listOf("gluten free", "dairy free", "ketogenic", "vegetarian", "lacto vegetarian", "ovo vegetarian", "lacto ovo vegetarian", "vegan", "pescetarian", "paleo", "primal", "whole30")
     val dishType = listOf("breakfast", "lunch", "dinner", "brunch", "beverage")
 
-    val checkedDiets = remember {mutableStateListOf<Boolean>()}
-    val checkedDishTypes = remember {mutableStateListOf<Boolean>()}
+    val dietsCheckedState = remember { mutableStateListOf<Boolean>() }
+    val dishTypeCheckedState = remember { mutableStateListOf<Boolean>() }
 
+    dietsCheckedState.addAll(List(diets.size) { false })
+    dishTypeCheckedState.addAll(List(dishType.size) { false })
     Box{
         LazyColumn(
             modifier = Modifier
@@ -42,18 +44,18 @@ fun FoodFilter(
                             .fillMaxWidth()
                             .height(56.dp)
                             .toggleable(
-                                value = checkedDiets.getOrNull(index) ?: false,
+                                value = dietsCheckedState.getOrNull(index) ?: false,
                                 onValueChange = {
-                                    checkedDiets[index] = it
+                                    dietsCheckedState[index] = it
                                 }
                             )
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
-                            checked = checkedDiets.getOrNull(index) ?: false,
+                            checked = dietsCheckedState.getOrNull(index) ?: false,
                             onCheckedChange = {
-                                checkedDiets[index] = it
+                                dietsCheckedState[index] = it
                             }
                         )
                         Text(
@@ -81,18 +83,18 @@ fun FoodFilter(
                             .fillMaxWidth()
                             .height(56.dp)
                             .toggleable(
-                                value = checkedDishTypes.getOrNull(index) ?: false,
+                                value = dishTypeCheckedState.getOrNull(index) ?: false,
                                 onValueChange = {
-                                    checkedDishTypes[index] = it
+                                    dishTypeCheckedState[index] = it
                                 }
                             )
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
-                            checked = checkedDishTypes.getOrNull(index) ?: false,
+                            checked = dishTypeCheckedState.getOrNull(index) ?: false,
                             onCheckedChange = {
-                                checkedDishTypes[index] = it
+                                dishTypeCheckedState[index] = it
                             }
                         )
                         Text(
@@ -104,29 +106,16 @@ fun FoodFilter(
             }
         }
 
-        val selectedFilters = remember(checkedDiets, checkedDishTypes) {
-            buildString {
-                checkedDiets.forEachIndexed { index, checked ->
-                    if (checked) {
-                        append(diets[index])
-                        append(",")
-                    }
-                }
-                checkedDishTypes.forEachIndexed { index, checked ->
-                    if (checked) {
-                        append(dishType[index])
-                        append(",")
-                    }
-                }
-                if (isNotEmpty()) {
-                    deleteCharAt(length - 1)
-                }
-            }
-        }
-
 
         FloatingActionButton(
             onClick = {
+                val selectedDiets = diets
+                    .filterIndexed { index, _ -> dietsCheckedState[index] }
+                    .joinToString(", ")
+                val selectedDishTypes = dishType
+                    .filterIndexed { index, _ -> dishTypeCheckedState[index] }
+                    .joinToString(", ")
+                val selectedFilters = "$selectedDiets, $selectedDishTypes"
                 onApplyFilters(selectedFilters)
             },
             shape = RoundedCornerShape(20.dp),

@@ -23,6 +23,7 @@ fun Frame(
     navController: NavHostController,
     recipeStateFlow: StateFlow<RecipeInstance?>,
     equipmentList: List<Equipment>,
+    onApplyFilters: (String) -> Unit,
     onRefreshClick: () -> Unit
 ) {
     var selectedScreen by remember { mutableStateOf(1) }
@@ -69,6 +70,7 @@ fun Frame(
             navController = navController,
             recipeStateFlow = recipeStateFlow,
             equipmentList = equipmentList,
+            onApplyFilters = onApplyFilters,
             onRefreshClick = onRefreshClick
         )
     }

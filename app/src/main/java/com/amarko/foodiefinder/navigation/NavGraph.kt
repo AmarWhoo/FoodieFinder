@@ -16,6 +16,7 @@ fun SetupNavGraph(
     navController: NavHostController,
     recipeStateFlow: StateFlow<RecipeInstance?>,
     equipmentList: List<Equipment>,
+    onApplyFilters: (String) -> Unit,
     onRefreshClick: () -> Unit
 ) {
     NavHost(
@@ -28,6 +29,7 @@ fun SetupNavGraph(
             HomeScreen(
                 recipeStateFlow = recipeStateFlow,
                 equipmentList = equipmentList,
+                onApplyFilters = onApplyFilters,
                 onRefreshClick = onRefreshClick
             )
         }
