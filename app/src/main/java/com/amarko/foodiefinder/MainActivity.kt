@@ -3,28 +3,27 @@ package com.amarko.foodiefinder
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.amarko.foodiefinder.navigation.Screen
-import com.amarko.foodiefinder.navigation.SetupNavGraph
+import com.amarko.foodiefinder.api.RetrofitInstance
+import com.amarko.foodiefinder.models.RecipeInstance
 import com.amarko.foodiefinder.repo.Repository
+import com.amarko.foodiefinder.ui.components.Frame
 import com.amarko.foodiefinder.ui.theme.FoodieFinderTheme
 import com.amarko.foodiefinder.viewmodel.MainViewModel
 import com.amarko.foodiefinder.viewmodel.MainViewModelFactory
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
 
-    lateinit var navController: NavHostController
+    private val recipeStateFlow: MutableStateFlow<RecipeInstance?> = MutableStateFlow(null)
 
     private lateinit var viewModel: MainViewModel
 
@@ -37,45 +36,46 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FoodieFinderTheme {
-                var selectedScreen by remember { mutableStateOf(1) }
+                val navController = rememberNavController()
 
-                Scaffold(
-                    bottomBar = {
-                        NavigationBar {
-                            NavigationBarItem(
-                                icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
-                                label = { Text("Settings") },
-                                selected = selectedScreen == 0,
-                                onClick = {
-                                    selectedScreen = 0
-                                    navController.navigate(Screen.Settings.route)
-                                }
-                            )
-                            NavigationBarItem(
-                                icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-                                label = { Text("Home") },
-                                selected = selectedScreen == 1,
-                                onClick = {
-                                    selectedScreen = 1
-                                    navController.navigate(Screen.Home.route)
-                                }
-                            )
-                            NavigationBarItem(
-                                icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorites") },
-                                label = { Text("Favorites") },
-                                selected = selectedScreen == 2,
-                                onClick = {
-                                    selectedScreen = 2
-                                    navController.navigate(Screen.Favorites.route)
-                                }
-                            )
+                LaunchedEffect(Unit) {
+                    viewModel.individualRecipe.collect { response ->
+                        if (response?.isSuccessful == true) {
+                            val recipe = response.body()
+                            recipeStateFlow.value = recipe
+                        } else {
+                            recipeStateFlow.value = null
                         }
                     }
-                ) {
-                    navController = rememberNavController()
-                    SetupNavGraph(navController = navController, viewModel = viewModel)
                 }
 
+                LaunchedEffect(Unit) {
+                    viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, 1)
+                }
+
+                val recipeState by recipeStateFlow.collectAsState(null)
+                if (recipeState != null) {
+                    val instructions: List<String> = recipeState!!.analyzedInstructions.flatMap { it.steps.map { step -> step.step } }
+
+                    viewModel.performAnalyzeInstructions(RetrofitInstance.API_KEY, instructions)
+                    val equipmentList by viewModel.analyzedInstructions.collectAsState(emptyList())
+
+//                  if (equipmentList.isNotEmpty())
+                    Frame(
+                        navController = navController,
+                        recipeStateFlow = recipeStateFlow,
+                        equipmentList = equipmentList,
+                        onRefreshClick = {
+                            viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, 1)
+                        }
+                    )
+                } else {
+                    Text(
+                        text = "Loading...",
+                        modifier = Modifier.fillMaxSize(),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }
