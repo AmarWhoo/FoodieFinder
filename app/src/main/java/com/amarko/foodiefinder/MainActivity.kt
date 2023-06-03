@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(Unit) {
-                    viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, 1)
+                    viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, "", 1)
                 }
 
                 val recipeState by recipeStateFlow.collectAsState(null)
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                         recipeStateFlow = recipeStateFlow,
                         equipmentList = equipmentList,
                         onRefreshClick = {
-                            viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, 1)
+                            viewModel.getRandomRecipeInstance(RetrofitInstance.API_KEY, "", 1)
                         }
                     )
                 } else {
